@@ -1,123 +1,96 @@
-# TFT Touch Quiz Booth & Event Registration System
+# Known Issues and Limitations
 
-This project is a complete **touchscreen-based Quiz Booth and Event Registration System** built using **Arduino Mega 2560** and a **2.8-inch MCUFRIEND TFT Touch Display**.  
-It is designed for use in college technical events, exhibitions, and quiz booths.
-
-The system supports **User login, Quiz participation, Event registration, Winner display, and Admin management**, all through a single touchscreen interface.
+This document lists the known limitations of the current version of the project.
 
 ---
 
-## Hardware Requirements
+## 1. Data Volatility on Restart
 
-- Arduino Mega 2560
-- 2.8-inch TFT LCD Touch Shield (MCUFRIEND compatible)
-- USB cable
-- 5V power source
+### Description
+All system data such as:
+- User scores
+- Event list
+- Registered participants
+- Winners information
 
----
+are **stored only in program memory (RAM)** during runtime.
 
-## Libraries Used
+### Impact
+- When the Arduino Mega is reset or powered off, **all stored data is lost**.
+- The system starts fresh after every restart.
 
-Make sure the following libraries are installed in Arduino IDE:
+### Reason
+- No external non-volatile storage (SD card / EEPROM database) is currently implemented.
+- Data structures are maintained only as in-code arrays and variables.
 
-- `MCUFRIEND_kbv`
-- `Adafruit_GFX`
-- `TouchScreen`
-
----
-
-## Features
-
-### User Features
-- User login using ID and password
-- Quiz participation (one-time attempt)
-- Automatic score update
-- View winners of events
-- Event registration
-- Prevents duplicate registrations
-
-### Admin Features
-- Secure admin login
-- Add new events dynamically
-- Set winners for each event (Rank 1, 2, 3)
-- View registered participants
-- Manage events and winners using touch keypad
+### Possible Improvement
+- Integrate an SD card module to store:
+  - Registrations
+  - Winners
+  - Scores
+- Use EEPROM for small persistent data such as configuration or scores.
 
 ---
 
-## Screen Flow
+## 2. Arduino Uno Not Supported
 
-1. Home Screen  
-2. User Login / Admin Login  
-3. User Dashboard  
-   - Start Quiz  
-   - View Winners  
-   - Register for Event  
-4. Admin Dashboard  
-   - Register Event  
-   - Set Winners  
-   - View Registrations  
+### Description
+This project **cannot run on Arduino Uno**.
 
----
+### Reason
+- Arduino Uno has only **32 KB of flash memory**.
+- The project includes:
+  - Multiple UI screens
+  - Touchscreen handling
+  - Quiz logic
+  - Admin and user workflows
+- The compiled sketch size exceeds Uno’s memory capacity.
 
-## Quiz System
+### Impact
+- Compilation fails or causes unstable runtime behavior on Arduino Uno.
+- TFT graphics and touch libraries alone consume a large portion of memory.
 
-- Random question selection
-- Multiple-choice questions
-- One attempt per user
-- Score increments for correct answers
-- Result feedback displayed instantly
+### Supported Board
+- **Arduino Mega 2560**
+  - 256 KB flash memory
+  - Sufficient SRAM for dynamic data handling
 
----
-
-## Event Registration System
-
-- Users can register only once
-- Admin can view all registrations
-- Stores participant name and ID
-- Supports up to 20 registrations
+### Possible Alternatives
+- Use Arduino Mega 2560 (recommended)
+- Use ESP32 for future versions (higher memory and storage support)
 
 ---
 
-## Winner Management
+## 3. Limited Scalability
 
-- Admin sets winners by entering participant ID
-- Supports 3 winners per event
-- Users can view winners without admin access
+### Description
+- Maximum number of users, events, and registrations are fixed at compile time.
 
----
+### Reason
+- Static array allocation is used for simplicity and stability.
 
-## Touchscreen Details
-
-- Fully touch-based navigation
-- On-screen numeric and alphabet keypad
-- Back navigation supported on all screens
+### Possible Improvement
+- Dynamic memory handling (on advanced MCUs)
+- External storage-based data management
 
 ---
 
-## Configuration Notes
+## 4. No Network Connectivity
 
-- Designed specifically for **Arduino Mega**
-- Not compatible with Arduino Uno due to memory limitations
-- TFT shield is directly mounted (no jumper wires required)
+### Description
+- The system works entirely offline.
 
----
+### Impact
+- Data cannot be synced or backed up remotely.
+- Admin actions are local-only.
 
-## Applications
-
-- College technical symposiums
-- Quiz booths
-- Event management kiosks
-- Exhibition demo systems
+### Possible Improvement
+- Add WiFi (ESP32-based version)
+- Cloud database integration
 
 ---
 
-## Author
+## Summary
 
-Developed as a final working project using Arduino Mega and TFT Touch Display.
-
----
-
-## License
-
-This project is open-source and free to use for educational purposes.
+This project is intentionally designed as an **offline, standalone TFT-based system** for demonstrations and college-level applications.  
+Future versions can enhance persistence, scalability, and connectivity using external storage or more powerful microcontrollers.
